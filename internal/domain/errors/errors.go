@@ -1,10 +1,12 @@
-package errors
+package domain
 
-const (
-	ErrInvalidRequest    = "invalid request"
-	ErrEmailRequired     = "email is required"
-	ErrPasswordTooWeak   = "password must be at least 8 characters"
-	ErrUserAlreadyExists = "user already exists"
-	ErrInternal          = "internal server error"
-	ErrUnauthorized      = "unauthorized"
+import "errors"
+
+var (
+	ErrInvalidRequest    = errors.New("invalid request")
+	ErrEmailRequired     = errors.New("email is required")
+	ErrPasswordTooWeak   = errors.New("password must be at least 8 characters")
+	ErrUserAlreadyExists = errors.New("user already exists")
+	ErrInternal          = errors.New("internal server error")
+	ErrUnauthorized      = errors.New("unauthorized")
 )
