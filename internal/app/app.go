@@ -30,7 +30,7 @@ func Run(cfg *config.Config, l *slog.Logger) {
 	authService := service.NewAuthService(l, authRepository)
 	authHandler := handler.NewAuthHandler(l, authService)
 	r := gin.New()
-	r.POST("/auth/register", authHandler.SignUp)
+	authHandler.SetupRoutes(r)
 	server := &http.Server{
 		Addr:    cfg.ServerAddress,
 		Handler: r,
