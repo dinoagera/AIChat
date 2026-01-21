@@ -14,6 +14,7 @@ import (
 	"github.com/dinoagera/AIChat/internal/http/handler"
 	"github.com/dinoagera/AIChat/internal/repository/postgres"
 	"github.com/dinoagera/AIChat/internal/service"
+	"github.com/dinoagera/AIChat/pkg/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -26,8 +27,12 @@ func Run(cfg *config.Config, l *slog.Logger) {
 		log.Fatalf("can't connect to postgresql: %v", err)
 	}
 	defer pool.Close()
+	managerToken, err := auth.NewManager(cfg.SecretKey)
+	if err != nil {
+		log.Fatalf("can't init manager jwt: %v", err)
+	}
 	authRepository := postgres.NewAuthRepository(pool)
-	authService := service.NewAuthService(l, authRepository)
+	authService := service.NewAuthService(l, authRepository, managerToken)
 	authHandler := handler.NewAuthHandler(l, authService)
 	r := gin.New()
 	authHandler.SetupRoutes(r)

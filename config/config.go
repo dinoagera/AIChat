@@ -2,13 +2,17 @@ package config
 
 import (
 	"log/slog"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	StoragePath   string `env:"DB_URL" env-required:"true"`
-	ServerAddress string `env:"SERVER_ADDRESS" env-default:":8080"`
+	StoragePath   string        `env:"DB_URL" env-required:"true"`
+	ServerAddress string        `env:"SERVER_ADDRESS" env-default:":8080"`
+	SecretKey     string        `env:"JWT_SECRET" env-required:"true"`
+	TokenTTL      time.Duration `env:"TOKEN_TTL" env-default:"15m"`
+	RefreshTTL    time.Duration `env:"REFRESH_TTL" env-default:"720h"`
 }
 
 func InitConfig(log *slog.Logger) (*Config, error) {

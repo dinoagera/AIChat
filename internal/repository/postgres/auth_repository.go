@@ -5,7 +5,8 @@ import (
 	"errors"
 	"time"
 
-	domain "github.com/dinoagera/AIChat/internal/domain/errors"
+	domain "github.com/dinoagera/AIChat/internal/domain"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -27,4 +28,15 @@ func (ar *AuthRepository) CreateUser(ctx context.Context, email, passHash string
 		return err
 	}
 	return nil
+}
+func (ar *AuthRepository) GetUserByEmail(ctx context.Context, email string) (domain.User, error) {
+	var user domain.User
+	err := ar.pool.QueryRow(ctx, `SELECT user_id, email, pass_hash FROM users WHERE email = $1`, email).Scan(&user.ID, &user.Email, &user.PassHash)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.User{}, domain.ErrUserNotFound
+		}
+		return domain.User{}, err
+	}
+	return user, nil
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	domain "github.com/dinoagera/AIChat/internal/domain/errors"
+	domain "github.com/dinoagera/AIChat/internal/domain"
 	"github.com/dinoagera/AIChat/pkg/auth"
 	"golang.org/x/crypto/bcrypt"
 )

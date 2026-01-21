@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
+	"github.com/dinoagera/AIChat/internal/domain"
 	"github.com/dinoagera/AIChat/pkg/messages"
 	"github.com/gin-gonic/gin"
 )
@@ -28,6 +30,11 @@ func (au *AuthHandler) SignUp(c *gin.Context) {
 	}
 	err := au.authService.SignUp(c.Request.Context(), req.Email, req.Password)
 	if err != nil {
+		if errors.Is(err, domain.ErrUserAlreadyExists) {
+			au.log.Info("failed to register user", "err", err)
+			c.AbortWithStatusJSON(http.StatusBadRequest, Response{Message: messages.MsgInvalidCredentials})
+			return
+		}
 		au.log.Info("failed to register user", "err", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -43,7 +50,7 @@ func (au *AuthHandler) SignIn(c *gin.Context) {
 	}
 	accessjwt, refreshToken, err := au.authService.SignIn(c.Request.Context(), req.Email, req.Password)
 	if err != nil {
-		//TODO: Add process to wrong password or email not exist
+		//TODO: Add process if wrong password or email not exist
 		au.log.Info("failed to login user", "err", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

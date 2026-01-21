@@ -9,4 +9,5 @@ var (
 	ErrUserAlreadyExists = errors.New("user already exists")
 	ErrUnauthorized      = errors.New("unauthorized")
 	ErrPasswordWrong     = errors.New("password is wrong")
+	ErrUserNotFound      = errors.New("user not found")
 )
