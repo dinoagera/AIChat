@@ -48,14 +48,29 @@ func (au *AuthHandler) SignIn(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	accessjwt, refreshToken, err := au.authService.SignIn(c.Request.Context(), req.Email, req.Password)
+	accessToken, refreshToken, err := au.authService.SignIn(c.Request.Context(), req.Email, req.Password)
 	if err != nil {
 		//TODO: Add process if wrong password or email not exist
 		au.log.Info("failed to login user", "err", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	c.JSON(http.StatusOK, ResponseSignUp{AccessToken: accessjwt, RefreshToken: refreshToken})
+	c.JSON(http.StatusOK, ResponseWithTokens{AccessToken: accessToken, RefreshToken: refreshToken})
+}
+func (au *AuthHandler) Refresh(c *gin.Context) {
+	var req RefreshRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		au.log.Info("failed to decode json req", "err", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	accessToken, refreshToken, err := au.authService.Refresh(c.Request.Context(), req.RefreshToken)
+	if err != nil {
+		au.log.Info("failed to refresh tokens", "err", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, ResponseWithTokens{AccessToken: accessToken, RefreshToken: refreshToken})
 }
 func (h *AuthHandler) SetupRoutes(router *gin.Engine) {
 	auth := router.Group("/auth")

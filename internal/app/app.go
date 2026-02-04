@@ -27,7 +27,7 @@ func Run(cfg *config.Config, l *slog.Logger) {
 		log.Fatalf("can't connect to postgresql: %v", err)
 	}
 	defer pool.Close()
-	managerToken, err := auth.NewManager(cfg.SecretKey)
+	managerToken, err := auth.NewManager(cfg.SecretKey, cfg.TokenTTL, cfg.RefreshTTL)
 	if err != nil {
 		log.Fatalf("can't init manager jwt: %v", err)
 	}

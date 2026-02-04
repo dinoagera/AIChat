@@ -40,3 +40,9 @@ func (ar *AuthRepository) GetUserByEmail(ctx context.Context, email string) (dom
 	}
 	return user, nil
 }
+func (ar *AuthRepository) GetRefreshToken(ctx context.Context, refreshToken string) (domain.RefreshToken, error) {
+
+}
+func (ar *AuthRepository) PutRefreshToken(ctx context.Context, refreshToken string) error {
+
+}

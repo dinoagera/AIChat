@@ -44,6 +44,32 @@ func (as *AuthService) SignIn(ctx context.Context, email, password string) (stri
 	if err != nil {
 		return "", "", domain.ErrPasswordWrong
 	}
-	//todo:add create jwt token and create session
-	return "", "", nil
+	accessToken, err := as.tokenManager.NewJWT(user.UserID)
+	if err != nil {
+		return "", "", domain.ErrPasswordWrong
+	}
+	refreshToken, err := as.tokenManager.NewRefreshToken()
+	if err != nil {
+		return "", "", domain.ErrPasswordWrong
+	}
+	return accessToken, refreshToken, nil
+}
+func (as *AuthService) Refresh(ctx context.Context, refreshToken string) (string, string, error) {
+	session, err := as.authRepository.GetRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return "", "", err
+	}
+	err = as.tokenManager.ParseRefreshToken(session, refreshToken)
+	if err != nil {
+		return "", "", err
+	}
+	accessToken, err := as.tokenManager.NewJWT(session.UserID)
+	if err != nil {
+		return "", "", err
+	}
+	newRefreshToken, err := as.tokenManager.NewRefreshToken()
+	if err != nil {
+		return "", "", err
+	}
+	return accessToken, newRefreshToken, nil
 }
