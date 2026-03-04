@@ -13,7 +13,7 @@ import (
 
 type TokenManager interface {
 	NewJWT(userId int64) (string, error)
-	Parse(accessToken string) (string, error)
+	Parse(accessToken string) (int64, error)
 	NewRefreshToken() (string, error)
 	ParseRefreshToken(session domain.RefreshToken, oldRefreshToken string) error
 }

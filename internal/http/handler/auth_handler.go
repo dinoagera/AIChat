@@ -50,7 +50,7 @@ func (au *AuthHandler) SignIn(c *gin.Context) {
 	}
 	accessToken, refreshToken, err := au.authService.SignIn(c.Request.Context(), req.Email, req.Password)
 	if err != nil {
-		//TODO: Add process if wrong password or email not exist
+		//TODO: Add process if wrong password or email not exist; Можно не возвращать, т.к. злоумышленник не поймет, что подбирает пароли под существующий акк
 		au.log.Info("failed to login user", "err", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -77,5 +77,6 @@ func (h *AuthHandler) SetupRoutes(router *gin.Engine) {
 	{
 		auth.POST("/register", h.SignUp)
 		auth.POST("/login", h.SignIn)
+		auth.POST("/refresh", h.Refresh)
 	}
 }

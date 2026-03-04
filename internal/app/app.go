@@ -31,7 +31,7 @@ func Run(cfg *config.Config, l *slog.Logger) {
 	if err != nil {
 		log.Fatalf("can't init manager jwt: %v", err)
 	}
-	authRepository := postgres.NewAuthRepository(pool)
+	authRepository := postgres.NewAuthRepository(pool, cfg.RefreshTTL)
 	authService := service.NewAuthService(l, authRepository, managerToken)
 	authHandler := handler.NewAuthHandler(l, authService)
 	r := gin.New()

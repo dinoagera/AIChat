@@ -52,23 +52,36 @@ func (as *AuthService) SignIn(ctx context.Context, email, password string) (stri
 	if err != nil {
 		return "", "", domain.ErrPasswordWrong
 	}
+	err = as.authRepository.CreateSession(ctx, refreshToken, user.UserID)
+	if err != nil {
+		return "", "", domain.ErrService
+	}
 	return accessToken, refreshToken, nil
 }
 func (as *AuthService) Refresh(ctx context.Context, refreshToken string) (string, string, error) {
 	session, err := as.authRepository.GetRefreshToken(ctx, refreshToken)
 	if err != nil {
+		as.log.Info("err", err)
 		return "", "", err
 	}
 	err = as.tokenManager.ParseRefreshToken(session, refreshToken)
 	if err != nil {
+		as.log.Info("err", err)
 		return "", "", err
 	}
 	accessToken, err := as.tokenManager.NewJWT(session.UserID)
 	if err != nil {
+		as.log.Info("wrong", "err", err)
 		return "", "", err
 	}
 	newRefreshToken, err := as.tokenManager.NewRefreshToken()
 	if err != nil {
+		as.log.Info("wrong", "err", err)
+		return "", "", err
+	}
+	err = as.authRepository.ReplaceRefreshToken(ctx, newRefreshToken, refreshToken)
+	if err != nil {
+		as.log.Info("err", err)
 		return "", "", err
 	}
 	return accessToken, newRefreshToken, nil
