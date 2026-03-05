@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	domain "github.com/dinoagera/AIChat/internal/domain"
@@ -38,6 +39,9 @@ func (as *AuthService) SignUp(ctx context.Context, email, password string) error
 func (as *AuthService) SignIn(ctx context.Context, email, password string) (string, string, error) {
 	user, err := as.authRepository.GetUserByEmail(ctx, email)
 	if err != nil {
+		if errors.Is(err, domain.ErrUserNotFound) {
+			return "", "", domain.ErrUserNotFound
+		}
 		return "", "", err
 	}
 	err = bcrypt.CompareHashAndPassword(user.PassHash, []byte(password))
