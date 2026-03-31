@@ -14,3 +14,7 @@ type AuthRepository interface {
 	ReplaceRefreshToken(ctx context.Context, oldToken, newToken string) error
 	CreateSession(ctx context.Context, newToken string, userID int64) error
 }
+type BrigadeRepository interface {
+	AddBrigade(ctx context.Context, req *domain.Brigade) error
+	CheckName(ctx context.Context, name string) bool
+}

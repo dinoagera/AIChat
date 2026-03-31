@@ -14,6 +14,7 @@ import (
 	"github.com/dinoagera/AIChat/internal/feature/http/handler"
 	"github.com/dinoagera/AIChat/internal/feature/repository/postgres"
 	"github.com/dinoagera/AIChat/internal/feature/service"
+
 	"github.com/dinoagera/AIChat/pkg/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

@@ -47,7 +47,7 @@ func (cs *ClientSearch) SearchCordinate(city string) (ResponseClientSearch, erro
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		cs.log.Error("Auth API returned error", "status", resp.StatusCode)
+		cs.log.Error("CordSearch API returned error", "status", resp.StatusCode)
 		return ResponseClientSearch{}, err
 	}
 	var searchResp ResponseClientSearch
