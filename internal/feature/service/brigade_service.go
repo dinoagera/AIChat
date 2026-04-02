@@ -22,12 +22,32 @@ func (b *BrigadeService) AddBrigade(ctx context.Context, req *domain.Brigade) er
 	if req.Status == "" {
 		req.Status = "free"
 	}
-	if ok := b.brigadeRepository.CheckName(ctx, req.Name); ok {
+	exists, err := b.brigadeRepository.CheckName(ctx, req.Name)
+	if exists {
 		b.log.Info("name is exists")
 		return domain.ErrBrigadeAlreadyExists
 	}
+	if err != nil {
+		b.log.Info("failed to check name", "err", err)
+		return err
+	}
 	if err := b.brigadeRepository.AddBrigade(ctx, req); err != nil {
 		b.log.Info("failed to add brigade", "err", err)
+		return err
+	}
+	return nil
+}
+func (b *BrigadeService) UpdateStatus(ctx context.Context, id int64, status string) error {
+	exists, err := b.brigadeRepository.CheckBrigadeByID(ctx, id)
+	if err != nil {
+		b.log.Info("failed to check brigade by id", "err", err)
+		return err
+	}
+	if !exists {
+		return domain.ErrBridageNotExists
+	}
+	if err := b.brigadeRepository.UpdateStatus(ctx, id, status); err != nil {
+		b.log.Info("failed to update status", "err", err)
 		return err
 	}
 	return nil

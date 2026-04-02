@@ -16,5 +16,7 @@ type AuthRepository interface {
 }
 type BrigadeRepository interface {
 	AddBrigade(ctx context.Context, req *domain.Brigade) error
-	CheckName(ctx context.Context, name string) bool
+	CheckName(ctx context.Context, name string) (bool, error)
+	CheckBrigadeByID(ctx context.Context, id int64) (bool, error)
+	UpdateStatus(ctx context.Context, id int64, status string) error
 }

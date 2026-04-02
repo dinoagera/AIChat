@@ -49,6 +49,10 @@ type AddBrigadeResponse struct {
 	Message string  `json:"message"`
 }
 
+type UpdateStatusRequest struct {
+	Status string `json:"status" binding:"required,oneof=free busy offline"`
+}
+
 func (r AddBrigadeRequest) Validate() bool {
 	if r.Name == "" {
 		return false

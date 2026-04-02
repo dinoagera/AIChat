@@ -3,7 +3,9 @@ package handler
 import (
 	"log/slog"
 	"net/http"
+	"strconv"
 
+	"github.com/dinoagera/AIChat/internal/domain"
 	"github.com/dinoagera/AIChat/pkg/messages"
 	"github.com/gin-gonic/gin"
 )
@@ -32,10 +34,36 @@ func (b *BrigadesHandler) AddBrigade(c *gin.Context) {
 		return
 	}
 	if err := b.brigadeService.AddBrigade(c.Request.Context(), req.Name, req.Lat, req.Lon, req.Status); err != nil {
-		//TODO:add err name  already exists
+		if err == domain.ErrBrigadeAlreadyExists {
+			b.log.Info("failed to add brigade", "err", err)
+			c.AbortWithStatusJSON(http.StatusBadRequest, Response{Message: messages.MsgNameBrigadeAlreadyExists})
+			return
+		}
 		b.log.Info("failed to add brigade", "err", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	c.JSON(http.StatusCreated, Response{Message: messages.MsgAddBrigdaesCorrect})
+}
+func (b *BrigadesHandler) UpdateStatus(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		b.log.Info("failed to parse str to int64", "err", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	var req UpdateStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		b.log.Info("failed to decode json req", "err", err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, Response{Message: messages.MsgStatusUncorrect})
+		return
+	}
+	if err := b.brigadeService.UpdateStatus(c.Request.Context(), id, req.Status); err != nil {
+		//add to BRIGADE IS EMPTY
+		b.log.Info("failed to update status", "err", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, Response{Message: messages.MsgStatusUpdateCorrect})
 }

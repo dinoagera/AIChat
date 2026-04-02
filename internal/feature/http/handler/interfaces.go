@@ -9,4 +9,5 @@ type AuthService interface {
 }
 type BrigadeService interface {
 	AddBrigade(ctx context.Context, name string, lat, lon float64, statis string) error
+	UpdateStatus(ctx context.Context, id int64, status string) error
 }
