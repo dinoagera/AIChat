@@ -18,18 +18,24 @@ func NewBrigadeService(log *slog.Logger, brigadeRepository BrigadeRepository) *B
 		brigadeRepository: brigadeRepository,
 	}
 }
-func (b *BrigadeService) AddBrigade(ctx context.Context, req *domain.Brigade) error {
-	if req.Status == "" {
-		req.Status = "free"
+func (b *BrigadeService) AddBrigade(ctx context.Context, name string, lat, lon float64, status string) error {
+	if status == "" {
+		status = "free"
 	}
-	exists, err := b.brigadeRepository.CheckName(ctx, req.Name)
+	exists, err := b.brigadeRepository.CheckName(ctx, name)
+	if err != nil {
+		b.log.Info("failed to check name", "err", err)
+		return err
+	}
 	if exists {
 		b.log.Info("name is exists")
 		return domain.ErrBrigadeAlreadyExists
 	}
-	if err != nil {
-		b.log.Info("failed to check name", "err", err)
-		return err
+	req := &domain.Brigade{
+		Name:   name,
+		Lat:    lat,
+		Lon:    lon,
+		Status: status,
 	}
 	if err := b.brigadeRepository.AddBrigade(ctx, req); err != nil {
 		b.log.Info("failed to add brigade", "err", err)

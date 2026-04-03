@@ -67,3 +67,13 @@ func (b *BrigadesHandler) UpdateStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, Response{Message: messages.MsgStatusUpdateCorrect})
 }
+func (b *BrigadesHandler) HandlerEmergency(c *gin.Context) {
+	var req EmergencyRequest
+}
+func (b *BrigadesHandler) SetupRoutes(router *gin.Engine) {
+	brigade := router.Group("/brigade")
+	{
+		brigade.POST("/add", b.AddBrigade)
+		brigade.POST("/:id/update", b.UpdateStatus)
+	}
+}

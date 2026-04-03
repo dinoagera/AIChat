@@ -35,8 +35,12 @@ func Run(cfg *config.Config, l *slog.Logger) {
 	authRepository := postgres.NewAuthRepository(pool, cfg.RefreshTTL)
 	authService := service.NewAuthService(l, authRepository, managerToken)
 	authHandler := handler.NewAuthHandler(l, authService)
+	brigadeRepository := postgres.NewBrigadesRepository(pool)
+	brigadeService := service.NewBrigadeService(l, brigadeRepository)
+	brigadeHandler := handler.NewBrigadesHandler(l, brigadeService)
 	r := gin.New()
 	authHandler.SetupRoutes(r)
+	brigadeHandler.SetupRoutes(r)
 	server := &http.Server{
 		Addr:    cfg.ServerAddress,
 		Handler: r,
