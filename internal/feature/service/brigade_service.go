@@ -10,6 +10,7 @@ import (
 type BrigadeService struct {
 	log               *slog.Logger
 	brigadeRepository BrigadeRepository
+	llmService        LLMService
 }
 
 func NewBrigadeService(log *slog.Logger, brigadeRepository BrigadeRepository) *BrigadeService {
@@ -57,4 +58,13 @@ func (b *BrigadeService) UpdateStatus(ctx context.Context, id int64, status stri
 		return err
 	}
 	return nil
+}
+func (b *BrigadeService) ProcessEmergency(ctx context.Context, text, phone_number, user_id string) error {
+	parsedDates, err := b.llmService.ParseEmergencyText(ctx, text)
+	if err != nil {
+		b.log.Info("llm parse failed", "err", err)
+		return domain.ErrLLMParseFailed
+	}
+	b.log.Info("llm parsed", "address", parsedDates.Address, "priority", parsedDates.Priority, "confidence", parsedDates.Confidence)
+
 }

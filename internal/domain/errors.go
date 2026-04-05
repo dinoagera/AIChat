@@ -14,4 +14,5 @@ var (
 	ErrInvalidRefreshToken  = errors.New("refresh token is wrong")
 	ErrBrigadeAlreadyExists = errors.New("brigade alreadu exists")
 	ErrBridageNotExists     = errors.New("brigade not exists")
+	ErrLLMParseFailed       = errors.New("failed to parse dates from LLM")
 )

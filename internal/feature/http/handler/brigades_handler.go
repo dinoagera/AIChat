@@ -67,8 +67,25 @@ func (b *BrigadesHandler) UpdateStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, Response{Message: messages.MsgStatusUpdateCorrect})
 }
-func (b *BrigadesHandler) HandlerEmergency(c *gin.Context) {
+func (b *BrigadesHandler) Emergency(c *gin.Context) {
 	var req EmergencyRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		b.log.Info("failed to decode json req", "err", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	if len(req.Text) < 10 {
+		b.log.Info("description too shortly")
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	err := b.brigadeService.ProcessEmergency(c.Request.Context(), req.Text, req.PhoneNumber, req.PhoneNumber)
+	if err != nil {
+		//add errors:1)not found brigade 2) address not determine
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	//c.JSON(http.StatusOK) //ADD return resp
 }
 func (b *BrigadesHandler) SetupRoutes(router *gin.Engine) {
 	brigade := router.Group("/brigade")

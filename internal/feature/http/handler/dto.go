@@ -19,19 +19,19 @@ type Response struct {
 	Message string `json:"message"`
 }
 type EmergencyRequest struct {
-	Lat      float64 `json:"lat"`
-	Lon      float64 `json:"lon"`
-	Address  string  `json:"address,omitempty"`
-	Priority string  `json:"priority,omitempty"`
+	Text        string `json:"text" binding:"required"`
+	PhoneNumber string `json:"phone_number,omitempty"`
+	UserID      string `json:"user_id,omitempty"`
 }
-
 type EmergencyResponse struct {
-	BrigadeID       int64   `json:"brigade_id"`
-	BrigadeName     string  `json:"brigade_name"`
-	ETAMinutes      int     `json:"eta_minutes"`
-	DistanceKm      float64 `json:"distance_km"`
-	WeatherDelayMin int     `json:"weather_delay_minutes,omitempty"`
-	Message         string  `json:"message"`
+	BrigadeID   int64   `json:"brigade_id"`
+	BrigadeName string  `json:"brigade_name"`
+	ETAMinutes  int     `json:"eta_minutes"`
+	DistanceKm  float64 `json:"distance_km"`
+	Address     string  `json:"address"`
+	Priority    string  `json:"priority"`
+	Message     string  `json:"message"`
+	RequestID   int64   `json:"request_id"`
 }
 type AddBrigadeRequest struct {
 	Name   string  `json:"name"`
@@ -68,13 +68,6 @@ func (r AddBrigadeRequest) Validate() bool {
 	}
 	return true
 }
-
-// {
-//   "lat": 55.788,
-//   "lon": 49.122,
-//   "address": "ул. Баумана, 15",
-//   "priority": "critical"
-// }
 
 // // Response 200 OK
 // {

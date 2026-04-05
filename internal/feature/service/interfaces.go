@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	client "github.com/dinoagera/AIChat/internal/clients/http"
 	"github.com/dinoagera/AIChat/internal/domain"
 )
 
@@ -19,4 +20,13 @@ type BrigadeRepository interface {
 	CheckName(ctx context.Context, name string) (bool, error)
 	CheckBrigadeByID(ctx context.Context, id int64) (bool, error)
 	UpdateStatus(ctx context.Context, id int64, status string) error
+}
+type LLMService interface {
+	ParseEmergencyText(ctx context.Context, text string) (client.ParsedEmergency, error)
+}
+type GeocoderService interface {
+	Geocode(ctx context.Context, address string) (lat, lon float64, err error)
+}
+type RoutingAPI interface {
+	GetETA(ctx context.Context, fromLat, fromLon, toLat, toLon float64) (etaMin int, distanceKm float64, err error)
 }
